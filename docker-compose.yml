@@ -1,0 +1,52 @@
+version: '2'
+networks:
+  web:
+    external: true
+  back:
+    driver: bridge
+services:
+  web:
+    image: nginx
+    links:
+    - app
+    volumes_from:
+    - app
+    volumes:
+    - ./nginx.conf:/etc/nginx/nginx.conf
+    environment:
+    - VIRTUAL_HOST
+    networks:
+    - back
+    - web
+  app:
+    image: indiehosters/osticket
+    links:
+    - db
+    volumes:
+    - ./config:/var/www/html/upload/include/ost-config.php
+    environment:
+    - MAIL_TLS=yes
+    - MAIL_STARTTLS=yes
+    - MAIL_HOST
+    - MAIL_PORT
+    - MAIL_USER
+    - MAIL_PASS
+    - MYSQL_PREFIX=ost_
+    - MYSQL_HOST=db
+    - MYSQL_DATABASE=osticket
+    - MYSQL_USER=osticket
+    - MYSQL_PASSWORD
+    - ADMIN_EMAIL
+    networks:
+    - back
+  db:
+    image: mysql
+    volumes:
+    - ./mysql/runtime:/var/lib/mysql
+    environment:
+    - MYSQL_ROOT_PASSWORD
+    - MYSQL_DATABASE=osticket
+    - MYSQL_USER=osticket
+    - MYSQL_PASSWORD
+    networks:
+    - back
