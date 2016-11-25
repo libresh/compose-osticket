@@ -1,6 +1,6 @@
 version: '2'
 networks:
-  web:
+  lb_web:
     external: true
   back:
     driver: bridge
@@ -17,7 +17,7 @@ services:
     - VIRTUAL_HOST
     networks:
     - back
-    - web
+    - lb_web
   app:
     image: indiehosters/osticket
     links:
